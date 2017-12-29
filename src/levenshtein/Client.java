@@ -13,6 +13,10 @@ public class Client {
 		firstword = secondword = "";
 
 		File dictionaryfile = new File("dictionary.txt");
+		Dictionary dictionary = new Dictionary();
+		dictionary.loadFile(dictionaryfile);
+		
+		
 		Scanner userInput = new Scanner(System.in);
 		if (userInput.hasNextInt()) {
 			insertCost = userInput.nextInt();
@@ -27,14 +31,19 @@ public class Client {
 						anagramCost = userInput.nextInt();
 
 						if (userInput.hasNextLine()) {
-							//consumes the newline
+							// consumes the newline
 							userInput.nextLine();
-							
+
 							firstword = userInput.nextLine();
 
 							if (userInput.hasNextLine()) {
 								secondword = userInput.nextLine();
-								validInput = true;
+								
+								// check if costs are not negative, word has to be 3 letters or longer, and words are valid
+								if (insertCost > 0 && deleteCost > 0 && anagramCost > 0 && swapCost > 0 && firstword.length() >= 3 && secondword.length() >= 3 
+										&& dictionary.lookupWord(firstword.toUpperCase()) && dictionary.lookupWord(secondword.toUpperCase())) {
+									validInput = true;
+								}
 							}
 						}
 					}
@@ -44,18 +53,49 @@ public class Client {
 		}
 		userInput.close();
 		if (validInput == true) {
-			Levenshtein distance = new Levenshtein(insertCost, deleteCost, swapCost, anagramCost, firstword,
-					secondword);
-			HashMap<String, ArrayList<String>> dictionary = distance.loadDictionary(dictionaryfile);
-			ArrayList<String> path = new ArrayList<String>();
-			int totalcost = distance.levenDist(path, dictionary);
-			System.out.println("(output: "+ totalcost +")");
+			System.out.println("(");
+			System.out.println(")");
+			System.out.println();
+			
 
 		} else {
 			System.out.println("(output: -1)");
 
 		}
 
+	}
+	
+	public static int[] lowestCost(ArrayList<ArrayList<String>> possibleRoutes,Dictionary dict,int insertCost,int deleteCost,int swapCost, int anagramCost){
+		int[] set = {-1,-1};
+		int total= 0;
+		for(int i = 0; i <= possibleRoutes.size();i++){
+			ArrayList<String> path = possibleRoutes.get(i);
+			for(int j = 0; j <= path.size();j++){
+				if(j != 0){
+					String prev = path.get(j-1);
+					String next = path.get(j);
+					if(prev.length() > next.length()){
+						total += deleteCost;
+					}
+					else if(prev.length() < next.length()){
+						total+= insertCost;
+					}
+					else if(dict.isAnagram(prev, next)){
+						total += anagramCost;
+					}
+					else{
+						total += swapCost;
+					}
+				}
+			}
+			if(set[1] > -1 && total <= set[1]){
+				set[1] = total;
+				set[0] = i;
+			}
+			total= 0;
+		}
+		
+		return set;
 	}
 
 }
