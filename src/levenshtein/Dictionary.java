@@ -24,7 +24,7 @@ public class Dictionary {
 		this.words = words;
 	}
 	
-	public void loadFile(File textfile){
+	public ArrayList<String> loadFile(File textfile){
 		ArrayList<String> text = new ArrayList<String>();
 		Scanner scan;
 		try{
@@ -41,6 +41,7 @@ public class Dictionary {
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		return text;
 	}
 	
 	/*
@@ -61,7 +62,7 @@ public class Dictionary {
 	 * @return true if the string is in the dictionary else returns false 
 	 */
 	public boolean lookupWord(String word){
-		ArrayList<String> dictionary = this.words;
+		ArrayList<String> dictionary = words;
 		return dictionary.contains(word);
 	}
 	
@@ -86,16 +87,61 @@ public class Dictionary {
 		return false;
 	}
 	
-	public ArrayList<String> possibleMatches(int difletter, String target){
+	public ArrayList<String> possibleMatches(int difletter, String start, String end){
 		ArrayList<String> words = this.words;
 		ArrayList<String> matches = new ArrayList<String>();
-		for(String temp :words){
+		int oldval =  end.length() - start.length();
+		for(String temp : words){
 			Levenshtein distance = new Levenshtein();
-			if(distance.minDistance(temp, target) == difletter){
+			int newval =  end.length() - temp.length();
+			if( distance.minDistance(start, temp) == 1 && Math.abs(oldval)>= Math.abs(newval)){
 				matches.add(temp);
 			}
 		}
 		return matches;
+	}
+	
+	private ArrayList<String> validPaths(int changes,String prev,String end, ArrayList<String> currtaken){
+		if( prev.equals(end))
+		{
+//			System.out.println(currtaken);
+			return currtaken;
+		}
+		if(changes <0){
+			return null;
+		}
+		ArrayList<String> ppaths = possibleMatches(changes-1,prev,end);
+		for(String word : ppaths){
+			ArrayList<String> temp = new ArrayList<String>();
+			for(String copy: currtaken){
+				temp.add(copy);
+			}
+			if(!currtaken.contains(word)){
+				temp.add(word);
+				validPaths(changes-1, word,end,temp);
+			}
+			
+		}
+		return null;
+	}
+	public ArrayList<ArrayList<String>> getAllPaths(String start, String end){
+		ArrayList<ArrayList<String>> vpaths = new ArrayList<ArrayList<String>>();
+		Levenshtein lev = new Levenshtein();
+		int differences = lev.minDistance(start, end);
+		ArrayList<String> possMatch = possibleMatches(differences -1,start, end);
+		ArrayList<String> initial = new ArrayList<String>();
+		initial.add(start);
+//		if(isAnagram(start,end)){
+//			possMatch.add(start);
+//		}
+
+		for(String word: possMatch){
+			initial.add(word);
+			vpaths.add(this.validPaths(differences-1,word,end,initial));
+		}
+		System.out.println(vpaths);
+		System.out.println(vpaths.size());
+		return vpaths;
 	}
 	
 

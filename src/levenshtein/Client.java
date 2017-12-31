@@ -14,8 +14,7 @@ public class Client {
 
 		File dictionaryfile = new File("dictionary.txt");
 		Dictionary dictionary = new Dictionary();
-		dictionary.loadFile(dictionaryfile);
-		
+		dictionary.setWords(dictionary.loadFile(dictionaryfile));	
 		
 		Scanner userInput = new Scanner(System.in);
 		if (userInput.hasNextInt()) {
@@ -34,10 +33,10 @@ public class Client {
 							// consumes the newline
 							userInput.nextLine();
 
-							firstword = userInput.nextLine();
+							firstword = userInput.nextLine().toUpperCase();
 
 							if (userInput.hasNextLine()) {
-								secondword = userInput.nextLine();
+								secondword = userInput.nextLine().toUpperCase();
 								
 								// check if costs are not negative, word has to be 3 letters or longer, and words are valid
 								if (insertCost > 0 && deleteCost > 0 && anagramCost > 0 && swapCost > 0 && firstword.length() >= 3 && secondword.length() >= 3 
@@ -53,8 +52,18 @@ public class Client {
 		}
 		userInput.close();
 		if (validInput == true) {
-			System.out.println("(");
+			ArrayList<ArrayList<String>> allPaths = dictionary.getAllPaths(firstword, secondword);
+			int[] set = lowestCost(allPaths,dictionary,insertCost, deleteCost, swapCost, anagramCost);
+			System.out.println("(" + set[1]);
 			System.out.println(")");
+			ArrayList<String> shortPath = allPaths.get(set[0]);
+			for(int i = 0; i<= shortPath.size();i++){
+				System.out.print(shortPath.get(i));
+				if(i != shortPath.size()){
+					System.out.print("-");
+				}
+			}
+			System.out.print(")");
 			System.out.println();
 			
 

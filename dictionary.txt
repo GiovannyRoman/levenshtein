@@ -1423,6 +1423,8 @@ hear
 hearing
 heart
 heat
+heats
+heath
 heating
 heaven
 heavily
@@ -1434,6 +1436,8 @@ hello
 help
 helpful
 hence
+hents
+hends
 her
 here
 hero
