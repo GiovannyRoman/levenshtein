@@ -53,16 +53,23 @@ public class Client {
 		userInput.close();
 		if (validInput == true) {
 			ArrayList<ArrayList<String>> allPaths = dictionary.getAllPaths(firstword, secondword);
-			int[] info = lowestCost(allPaths,dictionary,insertCost, deleteCost, swapCost, anagramCost);
-			System.out.print("(" +info[0] + ")(");
-			ArrayList<String> sequence = allPaths.get(info[1]);
-			for(int i =0; i < sequence.size();i++){
-				System.out.print(sequence.get(i));
-				if(i != sequence.size()-1){
-					System.out.print("-");
-				}
+			if(allPaths.isEmpty()){
+				System.out.println("(output: -1)");
 			}
-			System.out.println(")\n");
+			else{
+				ArrayList<Integer> info = Cost(allPaths,dictionary,insertCost, deleteCost, swapCost, anagramCost);
+				int index = lowestCost(info);
+				System.out.print("(" + info.get(index)+ ")(");
+				ArrayList<String> route = allPaths.get(index);
+				for(int i = 0; i < route.size(); i ++){
+					System.out.print(route.get(i) );
+					if(i !=route.size()-1){
+						System.out.print( "-");
+					}
+				}
+				System.out.println(")");
+				System.out.println();
+			}
 
 		} else {
 			System.out.println("(output: -1)");
@@ -71,9 +78,9 @@ public class Client {
 
 	}
 	
-	public static int[] lowestCost(ArrayList<ArrayList<String>> possibleRoutes,Dictionary dict,int insertCost,int deleteCost,int swapCost, int anagramCost){
+	public static ArrayList<Integer> Cost(ArrayList<ArrayList<String>> possibleRoutes,Dictionary dict,int insertCost,int deleteCost,int swapCost, int anagramCost){
 		//first number is min and second number is index
-		int[] set = {-1,-1};
+		ArrayList<Integer> weight = new ArrayList<Integer>(); 
 		
 		int total= 0;
 		for(int i = 0; i< possibleRoutes.size();i++){
@@ -98,18 +105,28 @@ public class Client {
 						total += swapCost;
 					}
 				}
-				if(set[0] > total &&set[0]<0){
-					set[0] = total;
-					set[1] = i;
-				}else{
-					set[0] = total;
-					set[1] = i;
-				}
 			}
+			weight.add(total);
 			total = 0;
 		}
 	
-		return set;
+		return weight;
+	}
+	public static int lowestCost(ArrayList<Integer> costs){
+		int index = 0;
+		if(!costs.isEmpty()){
+			int min = costs.get(0);
+			for(int i = 1 ; i< costs.size();i++){
+				if(min> costs.get(i)){
+					min = costs.get(i);
+					index = i;
+				}
+			}
+			return index;
+		}
+		
+			return -1;
+		
 	}
 
 }

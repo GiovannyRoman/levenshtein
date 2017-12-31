@@ -98,6 +98,12 @@ public class Dictionary {
 				matches.add(temp);
 			}
 		}
+		ArrayList<String> possAna = getAnagrams(start);
+		if(!possAna.isEmpty()){
+			for(String anagram : possAna){
+				matches.add(anagram);
+			}
+		}
 		return matches;
 	}
 	
@@ -129,15 +135,13 @@ public class Dictionary {
 		ArrayList<ArrayList<String>> vpaths = new ArrayList<ArrayList<String>>();
 		Levenshtein lev = new Levenshtein();
 		int differences = lev.minDistance(start, end);
-		ArrayList<String> possMatch = possibleMatches(differences -1,start, end);
-		ArrayList<String> initial = new ArrayList<String>();
-		initial.add(start);
-//		if(isAnagram(start,end)){
-//			possMatch.add(start);
-//		}
+		ArrayList<String> possMatch = possibleMatches(differences,start, end);
 
 		for(String word: possMatch){
+			ArrayList<String> initial = new ArrayList<String>();
+			initial.add(start);
 			initial.add(word);
+			
 			this.validPaths(differences,word,end,initial,vpaths);
 		}
 		return vpaths;
