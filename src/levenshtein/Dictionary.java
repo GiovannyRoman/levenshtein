@@ -65,7 +65,12 @@ public class Dictionary {
 		ArrayList<String> dictionary = words;
 		return dictionary.contains(word);
 	}
-	
+	/*
+	 * checks for all possible anagrams of word and return empty if not matches are found
+	 * 
+	 * @param word is the string that are trying to get all possible anagrams from
+	 * returns a list of possible anagrams
+	 */
 	public ArrayList<String> getAnagrams(String word){
 		ArrayList<String> anagrams = new ArrayList<String>();
 		String sortedword = sortWord(word);
@@ -77,7 +82,13 @@ public class Dictionary {
 		}
 		return anagrams;
 	}
-	
+	/*
+	 * checks if both words are anagrams of each other
+	 * 
+	 * @param firstword is a word that is going to be compared to another to determine if it is an anagram
+	 * @param secondword is a word that is going to be compared to another to determine if it is an anagram
+	 * returns true if words are anagram else false
+	 */
 	public boolean isAnagram(String firstword, String secondword){
 		String sortedword = sortWord(firstword);
 		String temp = sortWord(secondword);
@@ -86,8 +97,13 @@ public class Dictionary {
 		}
 		return false;
 	}
-	
-	public ArrayList<String> possibleMatches(int difletter, String start, String end){
+	/*
+	 * gets the list of all possible words that are anagrams or a change in a letter(insert,delete,swap)
+	 * 
+	 * @param start is the original word
+	 * @param end is the word that will be the changed to 
+	 */
+	private ArrayList<String> possibleMatches( String start, String end){
 		ArrayList<String> words = this.words;
 		ArrayList<String> matches = new ArrayList<String>();
 		int oldval =  end.length() - start.length();
@@ -107,6 +123,16 @@ public class Dictionary {
 		return matches;
 	}
 	
+	/*
+	 * updates the list of possible paths and returns a list of paths and null if it is not
+	 * 
+	 * @param changes is the number of changes needed to reach the end word
+	 * @param prev is the previous word
+	 * @param end is the end word
+	 * @param currtaken is the list of words already taken
+	 * @param vpath is the list of possible paths
+	 * returns a list of paths and null if it is not
+	 */
 	private ArrayList<String> validPaths(int changes,String prev,String end, ArrayList<String> currtaken,ArrayList<ArrayList<String>> vpath){
 		//check if prev word matches end word
 		if( prev.equals(end))
@@ -114,15 +140,16 @@ public class Dictionary {
 			vpath.add(currtaken);
 			return currtaken;
 		}
-		
-		ArrayList<String> ppaths = possibleMatches(changes-1,prev,end);
+		//checks if more paths
+		ArrayList<String> ppaths = possibleMatches(prev,end);
 		if(!ppaths.isEmpty()){
-			
+			//takes each possible paths
 			for(String word : ppaths){
 				ArrayList<String> temp = new ArrayList<String>();
 				for(String copy: currtaken){
 					temp.add(copy);
 				}
+				//checks if path is taken
 				if(!currtaken.contains(word) && changes >0){
 					temp.add(word);
 					validPaths(changes-1, word,end,temp, vpath);
@@ -131,11 +158,19 @@ public class Dictionary {
 		}
 		 return null;
 	}
+
+	/*
+	 * gets a list of all possible paths from start to end
+	 * 
+	 * @param start is the starting word
+	 * @param end is the ending word
+	 * returns a list of all possible paths
+	 */
 	public ArrayList<ArrayList<String>> getAllPaths(String start, String end){
 		ArrayList<ArrayList<String>> vpaths = new ArrayList<ArrayList<String>>();
 		Levenshtein lev = new Levenshtein();
 		int differences = lev.minDistance(start, end);
-		ArrayList<String> possMatch = possibleMatches(differences,start, end);
+		ArrayList<String> possMatch = possibleMatches(start, end);
 
 		for(String word: possMatch){
 			ArrayList<String> initial = new ArrayList<String>();

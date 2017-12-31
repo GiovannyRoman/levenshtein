@@ -57,6 +57,7 @@ public class Client {
 				System.out.println("(output: -1)");
 			}
 			else{
+				// displays cost and word list
 				ArrayList<Integer> info = Cost(allPaths,dictionary,insertCost, deleteCost, swapCost, anagramCost);
 				int index = lowestCost(info);
 				System.out.print("(" + info.get(index)+ ")(");
@@ -78,6 +79,17 @@ public class Client {
 
 	}
 	
+	/*
+	 *calculates the cost of each path and returns a list of the costs
+	 *
+	 * @param possibleRoutes are a list of valid paths
+	 * @param dict is a list of all valid words
+	 * @param insertCost is the cost of inserting a letter
+	 * @param deleteCost is the cost of deleting a letter
+	 * @param swapCost is the cost of swapping a letter
+	 * @param anagramCost is the cost of getting an anagram a letter
+	 * return a list of the cost of each path
+	 */
 	public static ArrayList<Integer> Cost(ArrayList<ArrayList<String>> possibleRoutes,Dictionary dict,int insertCost,int deleteCost,int swapCost, int anagramCost){
 		//first number is min and second number is index
 		ArrayList<Integer> weight = new ArrayList<Integer>(); 
@@ -90,17 +102,21 @@ public class Client {
 					total = 0;
 				}
 				else{
+					// check if letters were deleted
 					String prev = path.get(j-1);
 					String next = path.get(j);
 					if(prev.length() > next.length()){
 						total += deleteCost;
 					}
+					//check if letters were inserted
 					else if(prev.length() <next.length()){
 						total+= insertCost;
 					}
+					// check if words are anagrams
 					else if(dict.isAnagram(prev,next)){
 						total += anagramCost;
 					}
+					//check if letters are swapped
 					else if(prev.length() == next.length() && !prev.equals(next)){
 						total += swapCost;
 					}
@@ -112,6 +128,12 @@ public class Client {
 	
 		return weight;
 	}
+	/*
+	 * finds the index of the smallest number in the arraylist
+	 * 
+	 * @param costs is the arraylist of the cost of each different path 
+	 * @return an Integer of the index with the smallest number
+	 */
 	public static int lowestCost(ArrayList<Integer> costs){
 		int index = 0;
 		if(!costs.isEmpty()){
