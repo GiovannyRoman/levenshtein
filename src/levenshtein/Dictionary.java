@@ -101,28 +101,29 @@ public class Dictionary {
 		return matches;
 	}
 	
-	private ArrayList<String> validPaths(int changes,String prev,String end, ArrayList<String> currtaken){
+	private ArrayList<String> validPaths(int changes,String prev,String end, ArrayList<String> currtaken,ArrayList<ArrayList<String>> vpath){
+		//check if prev word matches end word
 		if( prev.equals(end))
 		{
-//			System.out.println(currtaken);
+			vpath.add(currtaken);
 			return currtaken;
 		}
-		if(changes <0){
-			return null;
-		}
+		
 		ArrayList<String> ppaths = possibleMatches(changes-1,prev,end);
-		for(String word : ppaths){
-			ArrayList<String> temp = new ArrayList<String>();
-			for(String copy: currtaken){
-				temp.add(copy);
-			}
-			if(!currtaken.contains(word)){
-				temp.add(word);
-				validPaths(changes-1, word,end,temp);
-			}
+		if(!ppaths.isEmpty()){
 			
+			for(String word : ppaths){
+				ArrayList<String> temp = new ArrayList<String>();
+				for(String copy: currtaken){
+					temp.add(copy);
+				}
+				if(!currtaken.contains(word) && changes >0){
+					temp.add(word);
+					validPaths(changes-1, word,end,temp, vpath);
+				}
+			}
 		}
-		return null;
+		 return null;
 	}
 	public ArrayList<ArrayList<String>> getAllPaths(String start, String end){
 		ArrayList<ArrayList<String>> vpaths = new ArrayList<ArrayList<String>>();
@@ -137,10 +138,8 @@ public class Dictionary {
 
 		for(String word: possMatch){
 			initial.add(word);
-			vpaths.add(this.validPaths(differences-1,word,end,initial));
+			this.validPaths(differences,word,end,initial,vpaths);
 		}
-		System.out.println(vpaths);
-		System.out.println(vpaths.size());
 		return vpaths;
 	}
 	
